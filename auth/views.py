@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from auth.lib.helpers.request import get_access_token_from_request
 import jwt
 from auth.serializers import SignToken
+from auth.lib.helpers.google_oauth import get_google_user_details
 
 
 class ListUsers(APIView):
@@ -62,3 +63,12 @@ class Login(APIView):
             return Response(payload)
 
         return Response({'error': 'Authentication Failed'})
+
+
+class GoogleSignIn(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        code = request.data['code']
+        user = get_google_user_details(request=request, code=code)
+        return Response(user)
